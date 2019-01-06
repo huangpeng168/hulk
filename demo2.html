@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+	<meta charset="UTF-8">
+    <title>HULK</title>
+    <!--<link rel='stylesheet' id='flatui-bootstrap.css-css'  href='bootstrap.min.css' type='text/css' media='all' />-->
+<!--<link rel='stylesheet' id='flatui-bootstrap-responsive.css-css'  href='bootstrap-responsive.min.css' type='text/css' media='all' />-->
+    <link rel="stylesheet" type="text/css" href="css/hulk.css" />
+    <link rel="stylesheet" type="text/css" href="css/hulk-colors.css" />
+    <link rel="stylesheet" type="text/css" href="css/codemirror.css" />
+    <style>
+      body {
+        font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+        margin-bottom: 60px;
+      }
+
+      .CodeMirror {
+        font-family: Consolas, "Andale Mono", Monaco, monospace;
+        min-height: 440px;
+      }
+	  .save-object-btn{
+		background:#009688 !important;
+		color:#FFF;
+		padding:10px;
+		text-decoration:none;
+	  }
+    </style>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/hulk.js"></script>
+    <script src="js/codemirror-compressed.js"></script>
+  </head>
+  <body>
+    <h1>HULK</h1>
+
+    <div class="row">
+      <div class="span12">
+        <h2>Here's some JSON</h2>
+        <p style="color: #a11; font-weight: bold; display: none;" id="observe">Check for the new values!</p>
+        <textarea id="code-mirror"></textarea>
+      </div>
+    </div>
+
+    <h2>Here's the same JSON, represented as HTML</h2>
+    <p>Make some changes to the boxes below. Then click the "Save" button and watch the JSON reload with new values</p>
+	<div style="margin-bottom:15px;">
+		<a href="javascript:void(0)" class="save-object-btn">保存JSON按钮</a>
+		<a href="javascript:void(0)" class="create-object-btn">新增一个对象节点</a>
+	</div>
+    <div id="hulk">
+
+    </div>
+	
+    <script>
+      var d = {
+        
+      };
+      var prettyPrint = function(data) {
+        return JSON.stringify(data, null, '\t');
+      };
+      $('#code-mirror').text(prettyPrint(d));
+	  
+      var editor = CodeMirror.fromTextArea(
+        document.getElementById('code-mirror'),
+        {
+          lineNumbers: true,
+          readOnly: false,//"nocursor",
+          mode: {
+            name: "javascript",
+            json: true
+          }
+        }
+      );
+	  
+      $(function() {
+		$(".save-object-btn").click(function(){
+			var _value=editor.getValue();//获取编辑框里的json字符   
+			console.log("json:"+_value+"\n");
+			loadPage(JSON.parse(_value));
+		});
+		loadPage(d);
+		function loadPage(d){
+			var _value=editor.getValue();
+			//console.log("ddd:"+d+"value:"+editor.getValue());
+			$.hulk('#hulk', d, function(data) {
+				//console.log(prettyPrint(data));
+				editor.setValue(prettyPrint(data));
+				$('body').animate({'scrollTop': "0px"}, function() {
+				  $("#observe").show();
+				});
+			}, {
+			  'separator': '==>',
+			  'depth': 1,
+			  'showSaveButton': true
+			  }
+			);
+		}
+        
+		$(".create-object-btn").click(function(){
+			oneTree();
+		});
+  });
+	  
+	  function oneTree(){
+		if($(".root-map.hulk-map").length<1){$("#hulk").children("div.hulk-map").addClass("root-map");}
+		var div='<div class="hulk-map-pair"><input class="hulk-map-key" value=""><p class="hulk-separator">==&gt;</p><button class="hulk-collapse-item">收起</button><div class="hulk-map hulk-map-value-container"><div class="hulk-map-pair"><input class="hulk-map-key" value=""><p class="hulk-separator">==&gt;</p><input class="hulk-input-text hulk-map-value hulk-map-value-container"></div><button class="hulk-map-add-pair">添加键值对</button></div></div>';
+		$(".root-map").prepend(div);
+		creaChildrenDom();
+		itemSwitch();
+	  }
+	  function creaChildrenDom(){//创建子节点
+			$(".hulk-map-add-pair").unbind("click");
+			$(".hulk-map-add-pair").bind("click",function(){
+				var btn=$(this);
+				twoDom(btn);
+			});
+	  }
+	  function twoDom(obj){
+		var div='<div class="hulk-map-pair"><input class="hulk-map-key" value=""><p class="hulk-separator">==&gt;</p><input class="hulk-input-text hulk-map-value hulk-map-value-container"></div>';
+		obj.before(div);
+	  }
+	  function itemSwitch(){
+		$(".hulk-collapse-item").unbind("click");
+		$(".hulk-collapse-item").bind("click",function(){//bind这个？？？？？
+			var obj=$(this);
+			if(obj.hasClass("collapsed")){//当前是收起状态
+				obj.siblings("div.hulk-map.hulk-map-value-container").show(); //show(),表示让对象的style里display：block；
+				obj.text("收起").removeClass("collapsed");
+			}else{
+				obj.siblings("div.hulk-map.hulk-map-value-container").hide(); //show(),表示让对象的style里display：none；
+				obj.text("展开").addClass("collapsed");//
+			}
+		});
+		}
+		//$("#dd").click(function(){});
+    </script>
+  </body>
+</html>
+

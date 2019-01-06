@@ -1,0 +1,33 @@
+{
+	"teams": [
+		{
+			"name": "Oakland Athletics",
+			"id": 1,
+			"wins": 57,
+			"blurb": "The 2011 Oakland ",
+			"players": [
+				"Yoenis Cespedes",
+				"Seth Smith",
+				"Josh Reddick",
+				"Coco Crisp"
+			]
+		},
+		{
+			"name": "San Francisco Giants",
+			"id": 2,
+			"wins": 48
+		}
+	],
+	"name": "Major League Baseball",
+	"meta": {
+		"season": 2013,
+		"sport": "baseball"
+	},
+    "province":"贵州省贵阳市",
+    "student":{
+       "stuno":1234,
+       "stuname":"zhangsan",
+       "age":28,
+       "sex":"男"
+    }
+}

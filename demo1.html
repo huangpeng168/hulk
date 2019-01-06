@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+  <head>
+	<meta charset="UTF-8">
+    <title>HULK</title>
+    <!--<link rel='stylesheet' id='flatui-bootstrap.css-css'  href='bootstrap.min.css' type='text/css' media='all' />-->
+<!--<link rel='stylesheet' id='flatui-bootstrap-responsive.css-css'  href='bootstrap-responsive.min.css' type='text/css' media='all' />-->
+    <link rel="stylesheet" type="text/css" href="css/hulk.css" />
+    <link rel="stylesheet" type="text/css" href="css/hulk-colors.css" />
+    <link rel="stylesheet" type="text/css" href="css/codemirror.css" />
+    <style>
+      body {
+        font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+        margin-bottom: 60px;
+      }
+
+      .CodeMirror {
+        font-family: Consolas, "Andale Mono", Monaco, monospace;
+        min-height: 440px;
+      }
+	  .save-object-btn{
+		background:#009688 !important;
+		color:#FFF;
+		padding:10px;
+		text-decoration:none;
+	  }
+    </style>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/hulk.js"></script>
+    <script src="js/codemirror-compressed.js"></script>
+  </head>
+  <body>
+    <h1>HULK</h1>
+
+    <div class="row">
+      <div class="span12">
+        <h2>Here's some JSON</h2>
+        <p style="color: #a11; font-weight: bold; display: none;" id="observe">Check for the new values!</p>
+        <textarea id="code-mirror"></textarea>
+      </div>
+    </div>
+
+    <h2>Here's the same JSON, represented as HTML</h2>
+    <p>Make some changes to the boxes below. Then click the "Save" button and watch the JSON reload with new values</p>
+	<div style="margin-bottom:15px;">
+		<a href="javascript:void(0)" class="save-object-btn">保存JSON按钮</a>
+	</div>
+    <div id="hulk">
+
+    </div>
+	
+    <script>
+      var d = {"root":{
+          "key1":"valua1"
+
+      }};
+      var prettyPrint = function(data) {
+        return JSON.stringify(data, null, '\t');
+      };
+      $('#code-mirror').text(prettyPrint(d));
+	  
+      var editor = CodeMirror.fromTextArea(
+        document.getElementById('code-mirror'),
+        {
+          lineNumbers: true,
+          readOnly: false,//"nocursor",
+          mode: {
+            name: "javascript",
+            json: true
+          }
+        }
+      );
+	  
+      $(function() {
+		$(".save-object-btn").click(function(){
+			var _value=editor.getValue();
+			console.log("data->str:"+_value+"\n"+JSON.parse(_value));
+			loadPage(JSON.parse(_value));
+		});
+		loadPage(d);
+		function loadPage(d){
+			var _value=editor.getValue();
+			//console.log("ddd:"+d+"value:"+editor.getValue());
+			$.hulk('#hulk', d, function(data) {
+				//console.log(prettyPrint(data));
+				editor.setValue(prettyPrint(data));
+				$('body').animate({'scrollTop': "0px"}, function() {
+				  $("#observe").show();
+				});
+			}, {
+			  'separator': '==>',
+			  'depth': 1,
+			  'showSaveButton': true
+			  }
+			);
+		}
+        
+      });
+    </script>
+  </body>
+</html>
+
